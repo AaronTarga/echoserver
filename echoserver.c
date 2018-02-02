@@ -23,14 +23,17 @@ int main(int argc, char *argv[]) {
 
 	c = sizeof(struct sockaddr_in);
 
-	client_socket = accept(socket_descriptor, (struct sockaddr *)&client, (socklen_t*)&c);
-
 	while(1) {
-		read = recv(client_socket,msg,2000,0);
-		send(client_socket,msg,read,0);
-		if(msg[0] == 27) {
-			close(client_socket);
-			client_socket = accept(socket_descriptor, (struct sockaddr *)&client, (socklen_t*)&c);
+
+		client_socket = accept(socket_descriptor, (struct sockaddr *)&client, (socklen_t*)&c);
+		if(fork() == 0) {
+			while(1) {
+			read = recv(client_socket,msg,2000,0);
+			send(client_socket,msg,read,0);
+				if(msg[0] == 27) {
+					close(client_socket);
+				}
+			}
 		}
 	}
 	return 0;
